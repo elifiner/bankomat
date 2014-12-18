@@ -33,7 +33,7 @@ class Page(object):
 
     def preview(self):
         with open('temp.html', 'w') as f:
-            f.write(self.response.text.encode('utf8'))
+            f.write(str(self.soup))
         os.system('open temp.html')
 
     def forms(self, selector=''):
