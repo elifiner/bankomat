@@ -29,11 +29,11 @@ class Page(object):
     def __init__(self, browser, response):
         self.browser = browser
         self.response = response
-        self.soup = BeautifulSoup(self.response.content)
+        self.soup = BeautifulSoup(self.response.text)
 
     def preview(self):
         with open('temp.html', 'w') as f:
-            f.write(self.response.content)
+            f.write(self.response.text.encode('utf8'))
         os.system('open temp.html')
 
     def forms(self, selector=''):
@@ -62,8 +62,8 @@ class Page(object):
         return self.response.url
 
     @property
-    def content(self):
-        return self.response.content
+    def text(self):
+        return self.response.text
 
     @property
     def status(self):
