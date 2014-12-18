@@ -9,8 +9,8 @@ def progress():
 
 if __name__ == '__main__':
     browser = Browser(progress=progress)
-    page = browser.get('https://hb2.bankleumi.co.il/H/Login.html')
-    page.form('#login').submit(uid=config.LEUMI_USERNAME, password=config.LEUMI_PASSWORD)
+    browser.get('https://hb2.bankleumi.co.il/H/Login.html')
+    browser.page.form('#login').submit(uid=config.LEUMI_USERNAME, password=config.LEUMI_PASSWORD)
     browser.get('/eBanking/SSOLogin.aspx?SectorCheck=Override')
     browser.get('/eBanking/Accounts/ExtendedActivity.aspx')
     # FIXME: select account by account number
