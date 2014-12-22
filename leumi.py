@@ -9,8 +9,9 @@ class BankLeumiAPI(object):
     def login(self, username, password):
         self.browser.get('https://hb2.bankleumi.co.il/H/Login.html')
         self.browser.page.form('#login').submit(uid=username, password=password)
+        if not self.browser.page.url.endswith('/InternalSite/Validate.asp'):
+            raise Exception('login error')
         self.browser.get('/eBanking/SSOLogin.aspx?SectorCheck=Override', allow_redirects=False)
-        # TODO: throw exception on login error
 
     def get_statement(self, account, from_date, to_date):
         self.browser.get('/eBanking/Accounts/ExtendedActivity.aspx')
