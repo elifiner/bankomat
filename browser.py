@@ -13,10 +13,10 @@ class Browser(object):
         self.hooks = dict(response=lambda r, *a, **k: self.progress())
         self.page = None
 
-    def get(self, url):
+    def get(self, url, **kwargs):
         if self.page:
             url = urljoin(self.page.url, url)
-        self.page = Page(self, self.session.get(url, hooks=self.hooks))
+        self.page = Page(self, self.session.get(url, hooks=self.hooks, **kwargs))
         return self.page
 
     def post(self, url, data):
