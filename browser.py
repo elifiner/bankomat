@@ -11,29 +11,39 @@ class Browser(object):
         self.session.headers.update({'user-agent':user_agent})
         self.progress = progress
         self.hooks = dict(response=lambda r, *a, **k: self.progress())
-        self.page = None
+        self.response = None
+        self.soup = None
 
     def get(self, url, **kwargs):
-        if self.page:
-            url = urljoin(self.page.url, url)
-        self.page = Page(self, self.session.get(url, hooks=self.hooks, **kwargs))
-        return self.page
+        self._parse(self.session.get(self.absolute_url(url), hooks=self.hooks, **kwargs))
 
-    def post(self, url, data):
-        if self.page:
-            url = urljoin(self.page.url, url)
-        self.page = Page(self, self.session.post(url, data=data, hooks=self.hooks))
-        return self.page
+    def post(self, url, data, **kwargs):
+        self._parse(self.session.post(self.absolute_url(url), data=data, hooks=self.hooks))
 
-class Page(object):
-    def __init__(self, browser, response):
-        self.browser = browser
+    def _parse(self, response):
         self.response = response
         self.soup = BeautifulSoup(self.response.text)
 
     def preview(self):
+        # convert relative paths to absolute paths in all relevant tags
+        soup = BeautifulSoup(self.response.text)        
+
+        tags = [
+            ("link", "href"),
+            ("a", "href"),
+            ("img", "src"),
+            ("script", "src"),
+            ("form", "action"),
+        ]
+
+        for tag, attr in tags:
+            for tag in soup.findAll(tag):
+                url = tag.get(attr)
+                if url:
+                    tag[attr] = self.absolute_url(url)
+
         with open('temp.html', 'w') as f:
-            f.write(str(self.soup))
+            f.write(str(soup))
         os.system('open temp.html')
 
     def forms(self, selector=''):
@@ -61,6 +71,12 @@ class Page(object):
     def url(self):
         return self.response.url
 
+    def absolute_url(self, url):
+        if self.response:
+            return urljoin(self.response.url, url)
+        else:
+            return url
+
     @property
     def text(self):
         return self.response.text
@@ -70,16 +86,16 @@ class Page(object):
         return self.response.status_code
 
 class Form(object):
-    def __init__(self, page, soup):
-        self.page = page
+    def __init__(self, browser, soup):
+        self.browser = browser
         self.soup = soup
 
     def submit(self, values=None, **kw):
         fields = self.get_defaults()
         fields.update(values or {})
         fields.update(kw)
-        action = urljoin(self.page.url, self.soup.get('action'))
-        return self.page.browser.post(action, fields)
+        action = self.browser.absolute_url(self.soup.get('action'))
+        return self.browser.post(action, fields)
 
     def get_defaults(self):
         fields = {}
@@ -106,8 +122,8 @@ class Form(object):
         return 'Form<name=%s;id=%s>' % (self.soup.get('name'),self.soup.get('id'))
 
 class Link(object):
-    def __init__(self, page, soup):
-        self.page = page
+    def __init__(self, browser, soup):
+        self.browser = browser
         self.soup = soup
 
     @property
@@ -116,14 +132,14 @@ class Link(object):
 
     @property
     def url(self):
-        return urljoin(self.page.url, self.soup.get('href'))
+        return self.browser.absolute_url(self.soup.get('href'))
 
     def __repr__(self):
         return 'Link<%s:%s>' % (self.text, self.url)
 
 class Table(object):
-    def __init__(self, page, soup):
-        self.page = page
+    def __init__(self, browser, soup):
+        self.browser = browser
         self.soup = soup
 
     @property
