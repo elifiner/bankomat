@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 
 DEFAULT_AGENT = 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'
 
+#FIXME: remove bs4 dependency, use lxml directly
+
 class Browser(object):
     def __init__(self, user_agent=DEFAULT_AGENT, progress=lambda: None):
         self.session = requests.Session()
@@ -22,11 +24,11 @@ class Browser(object):
 
     def _parse(self, response):
         self.response = response
-        self.soup = BeautifulSoup(self.response.text)
+        self.soup = BeautifulSoup(self.response.text, 'lxml')
 
     def preview(self):
         # convert relative paths to absolute paths in all relevant tags
-        soup = BeautifulSoup(self.response.text)        
+        soup = BeautifulSoup(self.response.text, 'lxml')
 
         tags = [
             ("link", "href"),
