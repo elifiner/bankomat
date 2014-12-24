@@ -21,9 +21,7 @@ class BankLeumiAPI(object):
             'ddlTransactionType'     : '001',
             'ddlTransactionPeriod'   : '004',
             'dtFromDate$textBox'     : '01/08/14',
-            'dtToDate$textBox'       : '01/10/14',
-            'btnDisplayDates.x'      : 0,
-            'btnDisplayDates.y'      : 0
+            'dtToDate$textBox'       : '01/10/14'
         })
         table = self.browser.table('.dataTable')
         yield table.headers

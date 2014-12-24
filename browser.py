@@ -34,8 +34,6 @@ class Browser(object):
             ("link", "href"),
             ("a", "href"),
             ("img", "src"),
-            ("script", "src"),
-            ("form", "action"),
         ]
 
         for tag, attr in tags:
@@ -43,6 +41,9 @@ class Browser(object):
                 url = tag.get(attr)
                 if url:
                     tag[attr] = self.absolute_url(url)
+
+        for script in soup.findAll('script'):
+            script.extract()
 
         with open('temp.html', 'w') as f:
             f.write(str(soup))
@@ -117,6 +118,12 @@ class Form(object):
                     if selected(option):
                         fields[el.get('name')] = option.get('value').strip()
                         break
+
+        # send x/y coordinates for a simulated click on image submit button
+        for el in self.soup.select('input[type=image]'):
+            if el.get('name') and enabled(el):
+                fields[el.get('name')+'.x'] = '0'
+                fields[el.get('name')+'.y'] = '0'
 
         return fields
 
