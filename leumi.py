@@ -34,8 +34,7 @@ if __name__ == '__main__':
     import config
     def progress():
         sys.stderr.write('.')
-
-    leumi = BankLeumiAPI(progress=progress)
-    leumi.login(config.LEUMI_USERNAME, config.LEUMI_PASSWORD)
-    for line in leumi.get_statement(None,None,None):
+    api = BankLeumiAPI(progress=progress)
+    api.login(config.LEUMI_USERNAME, config.LEUMI_PASSWORD)
+    for line in api.get_statement(None,None,None):
         print ','.join(line)
