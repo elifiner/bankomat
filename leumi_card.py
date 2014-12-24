@@ -16,6 +16,7 @@ class LeumiCardAPI(object):
 
     def get_statement(self, card_number, from_date, to_date):
         #FIXME: use parameters when getting data (convert dates to months)
+        #FIXME: get foreign transactions as well (TableType='ForeignTransactions')
         params = dict(
             PrintType='TransactionsTable',
             CardIndex='0',
