@@ -1,4 +1,4 @@
-#coding=utf8
+2#coding=utf8
 import sys
 from browser import Browser
 

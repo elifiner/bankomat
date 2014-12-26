@@ -2,7 +2,7 @@ from flask import Flask, request, abort
 from jinja2 import Template
 app = Flask(__name__)
 
-from leumi import BankLeumiAPI
+from api.leumi import BankLeumiAPI
 
 TEMPLATE = '''
 <style>
