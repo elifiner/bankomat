@@ -2,7 +2,7 @@ from flask import Flask, request, abort
 from jinja2 import Template
 app = Flask(__name__)
 
-from api.leumi import BankLeumiAPI
+from scrape.leumi import BankLeumiAPI
 
 TEMPLATE = '''
 <style>
@@ -18,10 +18,6 @@ TEMPLATE = '''
 </table>
 </body>
 '''
-
-@app.route('/')
-def root():
-    return 'Bankomat!'
 
 @app.route('/api/bank_leumi/<account>', methods=['GET', 'POST'])
 def bank_leumi(account):

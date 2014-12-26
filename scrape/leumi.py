@@ -29,10 +29,10 @@ class BankLeumiAPI(object):
             yield row
 
 if __name__ == '__main__':
-    import config
+    from cred import get_cred
     def progress():
         sys.stderr.write('.')
     api = BankLeumiAPI(progress=progress)
-    api.login(config.LEUMI_USERNAME, config.LEUMI_PASSWORD)
+    api.login(get_cred('leumi_username'), get_cred('leumi_password'))
     for line in api.get_statement(None,None,None):
         print ','.join(line)
