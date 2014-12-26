@@ -19,6 +19,10 @@ TEMPLATE = '''
 </body>
 '''
 
+@app.route('/')
+def root():
+    return 'Bankomat!'
+
 @app.route('/api/bank_leumi/<account>', methods=['GET', 'POST'])
 def bank_leumi(account):
     username = request.values.get('username')
