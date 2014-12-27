@@ -19,7 +19,7 @@ TEMPLATE = '''
 </body>
 '''
 
-@app.route('/api/bank_leumi/<account>', methods=['GET', 'POST'])
+@app.route('/bank_leumi/<account>', methods=['GET', 'POST'])
 def bank_leumi(account):
     username = request.values.get('username')
     password = request.values.get('password')

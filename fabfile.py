@@ -2,6 +2,8 @@ from fabric.api import *
 from fabric.contrib.files import exists
 from fabric.contrib.project import rsync_project
 
+env.hosts = ['dev.elifiner.com']
+
 # application settings
 app_user = 'eli'
 app_name = 'bankomat'
@@ -25,22 +27,17 @@ def _install_requirements():
         sudo('apt-get install -y git')
 
 def _configure_supervisor():
-    if exists(system_supervisor_conf):
-        sudo('rm %s' % system_supervisor_conf)
-    sudo('ln -s %s/%s %s' % (app_dir, local_supervisor_conf, system_supervisor_conf))
-    sudo('supervisorctl reread')
-    sudo('supervisorctl update')
+    if not exists(system_supervisor_conf):
+        sudo('ln -s %s/%s %s' % (app_dir, local_supervisor_conf, system_supervisor_conf))
 
 def _configure_nginx():
-    if exists(system_nginx_conf):
-        sudo('rm %s' % system_nginx_conf)
-    sudo('ln -s %s/%s %s' % (app_dir, local_nginx_conf, system_nginx_conf))
-    sudo('/etc/init.d/nginx restart')
+    if not exists(system_nginx_conf):
+        sudo('ln -s %s/%s %s' % (app_dir, local_nginx_conf, system_nginx_conf))
 
 def _sync_code():
     if not exists(app_dir):
         run('mkdir -p %s' % app_dir)
-    rsync_project(local_dir='./', remote_dir=app_dir, exclude=['venv'])
+    rsync_project(local_dir='./', remote_dir=app_dir, exclude=['venv'], extra_opts='--delete')
 
 def _update_venv():
     with cd(app_dir):
@@ -51,10 +48,7 @@ def _update_venv():
 
 def install():
     _install_requirements()
-    _sync_code()
-    _update_venv()
-    _configure_supervisor()
-    _configure_nginx()
+    update()
 
 def uninstall():
     if exists(app_dir):
@@ -67,6 +61,8 @@ def uninstall():
 def update():
     _sync_code()
     _update_venv()
+    _configure_nginx()
+    _configure_supervisor()
     restart()
 
 def start():
@@ -76,5 +72,6 @@ def stop():
     sudo('supervisorctl stop %s' % app_name)
 
 def restart():
+    sudo('supervisorctl reread')
     sudo('supervisorctl restart %s' % app_name)
     sudo('service nginx restart')
