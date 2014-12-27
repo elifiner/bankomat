@@ -1,39 +1,45 @@
-from flask import Flask, request, abort, render_template
-from jinja2 import Template
+from flask import Flask, request, abort, render_template, redirect, url_for
 app = Flask(__name__)
 
 from api.leumi import BankLeumiAPI
-
-TEMPLATE = '''
-<style>
-    body { direction: rtl; }
-    table { border-collapse: collapse; }
-    td { padding: 5px; border: 1px solid #ccc; }
-</style>
-<body>
-<table>
-    {%- for row in rows %}
-    <tr>{% for cell in row[:6] %}<td>{{cell}}</td>{% endfor %}</tr>
-    {%- endfor %}
-</table>
-</body>
-'''
+from api.common import LoginError
 
 @app.route('/', methods=['GET', 'POST'])
 def main():
-    return render_template('index.html')
+    if request.method == 'GET':
+        return render_template('index.html')
+    elif request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        account = request.form.get('account')
+        service = request.form.get('service')
 
-@app.route('/api/bank_leumi/<account>', methods=['GET', 'POST'])
-def bank_leumi(account):
+        if not (username and password and account):
+            abort(400)
+
+        if service == 'bank_leumi':
+            return redirect(url_for('bank_leumi',
+                account=account, 
+                username=username, 
+                password=password
+            ))
+
+        abort(400)
+
+@app.route('/api/bank/leumi', methods=['GET', 'POST'])
+def bank_leumi():
+    account = request.values.get('account')
     username = request.values.get('username')
     password = request.values.get('password')
-    if not username or not password:
+    if not (username and password and account):
         abort(400)
     api = BankLeumiAPI()
-    api.login(username, password)
-    template = Template(TEMPLATE)
+    try:
+        api.login(username, password)
+    except LoginError:
+        abort(403)
     rows = api.get_statement(None,None,None)
-    return template.render(rows=rows)
+    return render_template('statement.html', rows=rows)
 
 if __name__ == "__main__":
     app.run(debug=True)

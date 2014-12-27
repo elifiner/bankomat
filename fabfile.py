@@ -48,7 +48,10 @@ def _update_venv():
 
 def install():
     _install_requirements()
-    update()
+    _sync_code()
+    _update_venv()
+    _configure_nginx()
+    _configure_supervisor()
 
 def uninstall():
     if exists(app_dir):
@@ -61,17 +64,5 @@ def uninstall():
 def update():
     _sync_code()
     _update_venv()
-    _configure_nginx()
-    _configure_supervisor()
-    restart()
-
-def start():
-    sudo('supervisorctl start %s' % app_name)
-
-def stop():
-    sudo('supervisorctl stop %s' % app_name)
-
-def restart():
-    sudo('supervisorctl reread')
-    sudo('supervisorctl restart %s' % app_name)
+    sudo('supervisorctl update')
     sudo('service nginx restart')

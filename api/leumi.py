@@ -1,6 +1,7 @@
 # coding=utf8
 import sys
 from browser import Browser
+from common import LoginError
 
 class BankLeumiAPI(object):
     def __init__(self, progress=lambda: None):
@@ -10,7 +11,7 @@ class BankLeumiAPI(object):
         self.browser.get('https://hb2.bankleumi.co.il/H/Login.html')
         self.browser.form('#login').submit(uid=username, password=password)
         if not self.browser.url.endswith('/InternalSite/Validate.asp'):
-            raise Exception('login error')
+            raise LoginError('login error')
         self.browser.get('/eBanking/SSOLogin.aspx?SectorCheck=Override', allow_redirects=False)
 
     def get_statement(self, account, from_date, to_date):
