@@ -1,8 +1,8 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 from jinja2 import Template
 app = Flask(__name__)
 
-from scrape.leumi import BankLeumiAPI
+from api.leumi import BankLeumiAPI
 
 TEMPLATE = '''
 <style>
@@ -19,7 +19,11 @@ TEMPLATE = '''
 </body>
 '''
 
-@app.route('/bank_leumi/<account>', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
+def main():
+    return render_template('index.html')
+
+@app.route('/api/bank_leumi/<account>', methods=['GET', 'POST'])
 def bank_leumi(account):
     username = request.values.get('username')
     password = request.values.get('password')

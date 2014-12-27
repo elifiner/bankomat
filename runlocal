@@ -1,1 +1,1 @@
-env PYTHONPATH='.' python -m webapp.webapp
+env PYTHONPATH='.' venv/bin/python -m webapp.app
