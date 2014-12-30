@@ -64,5 +64,6 @@ def uninstall():
 def update():
     _sync_code()
     _update_venv()
-    sudo('supervisorctl update')
+    sudo('supervisorctl reread')
+    sudo('supervisorctl restart')
     sudo('service nginx restart')
