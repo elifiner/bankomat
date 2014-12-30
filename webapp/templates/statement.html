@@ -13,7 +13,7 @@
 <body>
 <table>
     {%- for row in rows %}
-    <tr>{% for cell in row[:6] %}<td>{{cell}}</td>{% endfor %}</tr>
+    <tr>{% for cell in row %}<td>{{cell}}</td>{% endfor %}</tr>
     {%- endfor %}
 </table>
 </body>

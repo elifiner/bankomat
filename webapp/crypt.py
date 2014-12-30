@@ -6,22 +6,23 @@ from Crypto.Cipher import AES
 
 IV = 16 * '\x00'
 
-def encrypt(text, key):
+def encrypt(key, text):
     text += '\0' * (16 - len(text) % 16)
     encryptor = AES.new(key, AES.MODE_CBC, IV=IV)
     return encryptor.encrypt(text)
 
-def decrypt(ciphertext, key):
+def decrypt(key, ciphertext):
     decryptor = AES.new(key, AES.MODE_CBC, IV=IV)
     return decryptor.decrypt(ciphertext).strip('\0')
 
-def encrypt_dict(dict, key):
-    return b64encode(encrypt(urlencode(dict), key))
+def encrypt_dict(key, dict):
+    return b64encode(encrypt(key, urlencode(dict)))
 
-def decrypt_dict(ciphertext, key):
-    return dict(parse_qsl(decrypt(b64decode(ciphertext), key)))
+def decrypt_dict(key, ciphertext):
+    return dict(parse_qsl(decrypt(key, b64decode(ciphertext))))
 
 if __name__ == '__main__':
-    creds = encrypt_dict(dict(username='eli', password='pass'), key='0123456789abcdef')
+    key = '0123456789abcdef'
+    creds = encrypt_dict(key, dict(username='eli', password='pass'))
     print creds
-    print decrypt_dict(creds, key='0123456789abcdef')
+    print decrypt_dict(key, creds)

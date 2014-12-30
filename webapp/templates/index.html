@@ -4,6 +4,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title></title>
     <style>
+    body {
+        margin: 20px;
+    }
+    input, select {
+        font-size: 16px;
+        display: block;
+        margin: 5px 0;
+        width: 200px;
+    }
     </style>
 
 </head>
@@ -12,10 +21,12 @@
         <select name="service" id="service">
             <option value="bank_leumi">Leumi</option>
             <option value="leumi_card">LeumiCard</option>
-        </select>
-        <input type="text" name="account" id="account" placeholder="account">
         <input type="text" name="username" id="username" placeholder="username">
         <input type="password" name="password" id="password" placeholder="password">
+        </select>
+        <input type="text" name="account" id="account" placeholder="account">
+        <input type="text" name="from_date" id="from_date" placeholder="from: dd/mm/yyyy">
+        <input type="text" name="to_date" id="to_date" placeholder="to: dd/mm/yyyy">
         <input type="submit">
     </form>
 </body>

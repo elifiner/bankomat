@@ -16,24 +16,27 @@ class BankLeumiAPI(object):
 
     def get_statement(self, account, from_date, to_date):
         self.browser.get('/eBanking/Accounts/ExtendedActivity.aspx')
-        self.browser.form().submit({
-            # FIXME: use ccount, from_date, to_date parameters
+        data = {
+            # FIXME: select the correct account
+            # FIXME: date selection doesn't work
             'ddlAccounts$m_ddl'      : '1',
             'ddlTransactionType'     : '001',
-            'ddlTransactionPeriod'   : '004',
-            'dtFromDate$textBox'     : '01/08/14',
-            'dtToDate$textBox'       : '01/10/14'
-        })
+            'ddlTransactionPeriod'   : '004', # between dates
+            'dtFromDate$textBox'     : from_date.strftime('%d/%m/%y'),
+            'dtToDate$textBox'       : to_date.strftime('%d/%m/%y'),
+        }
+        self.browser.form().submit(data)
         table = self.browser.table('.dataTable')
-        yield table.headers
+        yield table.headers[:6]
         for row in table.rows:
-            yield row
+            yield row[:6]
 
 if __name__ == '__main__':
+    from datetime import datetime
     from cred import get_cred
     def progress():
         sys.stderr.write('.')
     api = BankLeumiAPI(progress=progress)
     api.login(get_cred('leumi_username'), get_cred('leumi_password'))
-    for line in api.get_statement(None,None,None):
+    for line in api.get_statement(None,datetime(2014,7,1),datetime(2014,9,1)):
         print ','.join(line)
