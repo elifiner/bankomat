@@ -65,5 +65,5 @@ def update():
     _sync_code()
     _update_venv()
     sudo('supervisorctl reread')
-    sudo('supervisorctl restart')
+    sudo('supervisorctl restart %s' % app_name)
     sudo('service nginx restart')

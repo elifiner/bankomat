@@ -1,6 +1,5 @@
 from urllib import urlencode
 from urlparse import parse_qsl
-# from simplecrypt import encrypt, decrypt
 from base64 import b64encode, b64decode
 
 from Crypto.Cipher import AES
@@ -16,13 +15,13 @@ def decrypt(ciphertext, key):
     decryptor = AES.new(key, AES.MODE_CBC, IV=IV)
     return decryptor.decrypt(ciphertext).strip('\0')
 
-def encrypt_creds(creds, key):
-    return b64encode(encrypt(urlencode(creds), key))
+def encrypt_dict(dict, key):
+    return b64encode(encrypt(urlencode(dict), key))
 
-def decrypt_creds(encrypted_creds, key):
-    return dict(parse_qsl(decrypt(b64decode(encrypted_creds), key)))
+def decrypt_dict(ciphertext, key):
+    return dict(parse_qsl(decrypt(b64decode(ciphertext), key)))
 
 if __name__ == '__main__':
-    creds = encrypt_creds(dict(username='eli', password='pass'), key='0123456789abcdef')
+    creds = encrypt_dict(dict(username='eli', password='pass'), key='0123456789abcdef')
     print creds
-    print decrypt_creds(creds, key='0123456789abcdef')
+    print decrypt_dict(creds, key='0123456789abcdef')

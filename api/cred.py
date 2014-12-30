@@ -1,4 +1,5 @@
 import json
+from getpass import getpass
 
 def make_title(name):
     return ' '.join([p[0].upper() + p[1:] for p in name.split('_')])
@@ -12,6 +13,9 @@ def get_cred(name):
         except (IOError, ValueError):
             CRED = {}
     if name not in CRED:
-        CRED[name] = raw_input("%s: " % make_title(name))
+        if 'password' in name.lower():
+            CRED[name] = getpass("%s: " % make_title(name))
+        else:
+            CRED[name] = raw_input("%s: " % make_title(name))
         json.dump(CRED, open('cred.json', 'w'))
     return CRED[name]
